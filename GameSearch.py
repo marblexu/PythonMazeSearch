@@ -17,7 +17,7 @@ class Game():
 		pygame.init()
 		self.screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 		self.clock = pygame.time.Clock()
-		self.map = Map(SCREEN_WIDTH//REC_SIZE, SCREEN_HEIGHT//REC_SIZE)
+		self.map = Map(REC_WIDTH, REC_HEIGHT)
 		self.mode = 0
 		
 	def play(self):

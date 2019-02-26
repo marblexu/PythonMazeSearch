@@ -1,4 +1,4 @@
-from random import randint
+from random import randint, choice
 from GameMap import *
 from AStarSearch import *
 
@@ -70,21 +70,83 @@ def doRecursiveDivision(map):
 		map.setMap(map.width-1, y, MAP_ENTRY_TYPE.MAP_BLOCK)
 		
 	recursiveDivision(map, 1, 1, map.width - 2, map.height - 2, MAP_ENTRY_TYPE.MAP_BLOCK)
+
+
+def randomPrim(map, width, height):
+		
+	def checkAdjacentPos(map, x, y, width, height, checklist):
+		directions = []
+		if x > 0:
+			if not map.isVisited(2*(x-1)+1, 2*y+1):
+				directions.append(WALL_DIRECTION.WALL_LEFT)
+				
+		if y > 0:
+			if not map.isVisited(2*x+1, 2*(y-1)+1):
+				directions.append(WALL_DIRECTION.WALL_UP)
+
+		if x < width -1:
+			if not map.isVisited(2*(x+1)+1, 2*y+1):
+				directions.append(WALL_DIRECTION.WALL_RIGHT)
+		
+		if y < height -1:
+			if not map.isVisited(2*x+1, 2*(y+1)+1):
+				directions.append(WALL_DIRECTION.WALL_DOWN)
+		
+		if len(directions):
+			direction = choice(directions)
+			print("(%d, %d) => %s" % (x, y, str(direction)))
+			if direction == WALL_DIRECTION.WALL_LEFT:
+				map.setMap(2*(x-1)+1, 2*y+1, MAP_ENTRY_TYPE.MAP_EMPTY)
+				map.setMap(2*x, 2*y+1, MAP_ENTRY_TYPE.MAP_EMPTY)
+				checklist.append((x-1, y))
+			elif direction == WALL_DIRECTION.WALL_UP:
+				map.setMap(2*x+1, 2*(y-1)+1, MAP_ENTRY_TYPE.MAP_EMPTY)
+				map.setMap(2*x+1, 2*y, MAP_ENTRY_TYPE.MAP_EMPTY)
+				checklist.append((x, y-1))
+			elif direction == WALL_DIRECTION.WALL_RIGHT:
+				map.setMap(2*(x+1)+1, 2*y+1, MAP_ENTRY_TYPE.MAP_EMPTY)
+				map.setMap(2*x+2, 2*y+1, MAP_ENTRY_TYPE.MAP_EMPTY)
+				checklist.append((x+1, y))
+			elif direction == WALL_DIRECTION.WALL_DOWN:
+				map.setMap(2*x+1, 2*(y+1)+1, MAP_ENTRY_TYPE.MAP_EMPTY)
+				map.setMap(2*x+1, 2*y+2, MAP_ENTRY_TYPE.MAP_EMPTY)
+				checklist.append((x, y+1))
+			return True
+		else:
+			return False
+			
+	start = (randint(0, width), randint(0, height))
+	map.setMap(2*start[0], 2*start[1], MAP_ENTRY_TYPE.MAP_EMPTY)
+	print("start(%d, %d)" % (start[0], start[1]))
+	checklist = []
+	checklist.append(start)
+	while len(checklist):
+		entry = choice(checklist)
+		print(entry)		
+		if not checkAdjacentPos(map, entry[0], entry[1], width, height, checklist):
+			checklist.remove(entry)
 	
+		
+def doRandomPrim(map):
+	map.resetMap(MAP_ENTRY_TYPE.MAP_BLOCK)
+	
+	randomPrim(map, (map.width-1)//2, (map.height-1)//2)
+		
 def generateMap(map):
-	doRecursiveDivision(map)
+	#doRecursiveDivision(map)
+	doRandomPrim(map)
 	
 def run():
-	WIDTH = 21
-	HEIGHT = 21
+	WIDTH = 31
+	HEIGHT = 31
 	
 	map = Map(WIDTH, HEIGHT)
 	generateMap(map)
-	source = map.generatePos((1,1),(1,HEIGHT-1))
-	dest = map.generatePos((WIDTH-2,WIDTH-2),(1,HEIGHT-1))
-	print("source:", source)
-	print("dest:", dest)
-	AStarSearch(map, source, dest)
+	#source = map.generatePos((1,1),(1,HEIGHT-1))
+	#dest = map.generatePos((WIDTH-2,WIDTH-2),(1,HEIGHT-1))
+	#print("source:", source)
+	#print("dest:", dest)
+	#AStarSearch(map, source, dest)
 	map.showMap()	
 	
 
