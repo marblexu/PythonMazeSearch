@@ -1,13 +1,24 @@
 from random import randint, choice
 from GameMap import *
 from AStarSearch import *
+from enum import Enum
 
+class MAZE_GENERATOR_TYPE(Enum):
+	RECURSIVE_BACKTRACKER = 0,
+	RANDOM_PRIM = 1,
+	RECURSIVE_DIVISION = 2,
+
+generator_types = {MAZE_GENERATOR_TYPE.RECURSIVE_BACKTRACKER:"Recur Backtrack", 
+					MAZE_GENERATOR_TYPE.RANDOM_PRIM:"Random Prim",
+					MAZE_GENERATOR_TYPE.RECURSIVE_DIVISION:"Recur Division"}
+
+# recursive division algorithm
 def recursiveDivision(map, x, y, width, height, wall_value):
 	# start must be a odd number, wall_index must be a even number
 	def getWallIndex(start, length):
 		assert length >= 3
 		wall_index = randint(start + 1, start + length - 2)
-		print("start:%d len:%d wall_index:%d" % (start, length, wall_index))
+		#print("start:%d len:%d wall_index:%d" % (start, length, wall_index))
 		if wall_index % 2 == 1:
 			wall_index -= 1
 		return wall_index
@@ -71,77 +82,104 @@ def doRecursiveDivision(map):
 		
 	recursiveDivision(map, 1, 1, map.width - 2, map.height - 2, MAP_ENTRY_TYPE.MAP_BLOCK)
 
-
-def randomPrim(map, width, height):
-		
-	def checkAdjacentPos(map, x, y, width, height, checklist):
-		directions = []
-		if x > 0:
-			if not map.isVisited(2*(x-1)+1, 2*y+1):
-				directions.append(WALL_DIRECTION.WALL_LEFT)
+# find unvisited adjacent entries of four possible entris
+# then add random one of them to checklist and mark it as visited
+def checkAdjacentPos(map, x, y, width, height, checklist):
+	directions = []
+	if x > 0:
+		if not map.isVisited(2*(x-1)+1, 2*y+1):
+			directions.append(WALL_DIRECTION.WALL_LEFT)
 				
-		if y > 0:
-			if not map.isVisited(2*x+1, 2*(y-1)+1):
-				directions.append(WALL_DIRECTION.WALL_UP)
+	if y > 0:
+		if not map.isVisited(2*x+1, 2*(y-1)+1):
+			directions.append(WALL_DIRECTION.WALL_UP)
 
-		if x < width -1:
-			if not map.isVisited(2*(x+1)+1, 2*y+1):
-				directions.append(WALL_DIRECTION.WALL_RIGHT)
+	if x < width -1:
+		if not map.isVisited(2*(x+1)+1, 2*y+1):
+			directions.append(WALL_DIRECTION.WALL_RIGHT)
 		
-		if y < height -1:
-			if not map.isVisited(2*x+1, 2*(y+1)+1):
-				directions.append(WALL_DIRECTION.WALL_DOWN)
+	if y < height -1:
+		if not map.isVisited(2*x+1, 2*(y+1)+1):
+			directions.append(WALL_DIRECTION.WALL_DOWN)
 		
-		if len(directions):
-			direction = choice(directions)
-			print("(%d, %d) => %s" % (x, y, str(direction)))
-			if direction == WALL_DIRECTION.WALL_LEFT:
+	if len(directions):
+		direction = choice(directions)
+		#print("(%d, %d) => %s" % (x, y, str(direction)))
+		if direction == WALL_DIRECTION.WALL_LEFT:
 				map.setMap(2*(x-1)+1, 2*y+1, MAP_ENTRY_TYPE.MAP_EMPTY)
 				map.setMap(2*x, 2*y+1, MAP_ENTRY_TYPE.MAP_EMPTY)
 				checklist.append((x-1, y))
-			elif direction == WALL_DIRECTION.WALL_UP:
+		elif direction == WALL_DIRECTION.WALL_UP:
 				map.setMap(2*x+1, 2*(y-1)+1, MAP_ENTRY_TYPE.MAP_EMPTY)
 				map.setMap(2*x+1, 2*y, MAP_ENTRY_TYPE.MAP_EMPTY)
 				checklist.append((x, y-1))
-			elif direction == WALL_DIRECTION.WALL_RIGHT:
+		elif direction == WALL_DIRECTION.WALL_RIGHT:
 				map.setMap(2*(x+1)+1, 2*y+1, MAP_ENTRY_TYPE.MAP_EMPTY)
 				map.setMap(2*x+2, 2*y+1, MAP_ENTRY_TYPE.MAP_EMPTY)
 				checklist.append((x+1, y))
-			elif direction == WALL_DIRECTION.WALL_DOWN:
-				map.setMap(2*x+1, 2*(y+1)+1, MAP_ENTRY_TYPE.MAP_EMPTY)
-				map.setMap(2*x+1, 2*y+2, MAP_ENTRY_TYPE.MAP_EMPTY)
-				checklist.append((x, y+1))
-			return True
-		else:
-			return False
-			
-	start = (randint(0, width), randint(0, height))
-	map.setMap(2*start[0], 2*start[1], MAP_ENTRY_TYPE.MAP_EMPTY)
-	print("start(%d, %d)" % (start[0], start[1]))
-	checklist = []
-	checklist.append(start)
-	while len(checklist):
-		entry = choice(checklist)
-		print(entry)		
-		if not checkAdjacentPos(map, entry[0], entry[1], width, height, checklist):
-			checklist.remove(entry)
+		elif direction == WALL_DIRECTION.WALL_DOWN:
+			map.setMap(2*x+1, 2*(y+1)+1, MAP_ENTRY_TYPE.MAP_EMPTY)
+			map.setMap(2*x+1, 2*y+2, MAP_ENTRY_TYPE.MAP_EMPTY)
+			checklist.append((x, y+1))
+		return True
+	else:
+		# if not find any unvisited adjacent entry
+		return False
+
+# random prim algorithm
+def randomPrim(map, width, height):			
+	startX, startY = (randint(0, width-1), randint(0, height-1))
+	print("start(%d, %d)" % (startX, startY))
+	map.setMap(2*startX+1, 2*startY+1, MAP_ENTRY_TYPE.MAP_EMPTY)
 	
+	checklist = []
+	checklist.append((startX, startY))
+	while len(checklist):
+		# select a random entry from checklist
+		entry = choice(checklist)	
+		if not checkAdjacentPos(map, entry[0], entry[1], width, height, checklist):
+			# the entry has no unvisited adjacent entry, so remove it from checklist
+			checklist.remove(entry)
 		
 def doRandomPrim(map):
-	map.resetMap(MAP_ENTRY_TYPE.MAP_BLOCK)
-	
+	# set all entries of map to wall
+	map.resetMap(MAP_ENTRY_TYPE.MAP_BLOCK)	
 	randomPrim(map, (map.width-1)//2, (map.height-1)//2)
-		
-def generateMap(map):
-	#doRecursiveDivision(map)
-	doRandomPrim(map)
+
+# recursive backtracker algorithm
+def recursiveBacktracker(map, width, height):
+	startX, startY = (randint(0, width-1), randint(0, height-1))
+	print("start(%d, %d)" % (startX, startY))
+	map.setMap(2*startX+1, 2*startY+1, MAP_ENTRY_TYPE.MAP_EMPTY)
+	
+	checklist = [] 
+	checklist.append((startX, startY))
+	while len(checklist):
+		# use checklist as a stack, get entry from the top of stack 
+		entry = checklist[-1]
+		if not checkAdjacentPos(map, entry[0], entry[1], width, height, checklist):
+			# the entry has no unvisited adjacent entry, so remove it from checklist
+			checklist.remove(entry)
+
+def doRecursiveBacktracker(map):
+	# set all entries of map to wall
+	map.resetMap(MAP_ENTRY_TYPE.MAP_BLOCK)	
+	recursiveBacktracker(map, (map.width-1)//2, (map.height-1)//2)
+
+def generateMap(map, type):
+	if type == MAZE_GENERATOR_TYPE.RECURSIVE_BACKTRACKER:
+		doRecursiveBacktracker(map)
+	elif type == MAZE_GENERATOR_TYPE.RANDOM_PRIM:
+		doRandomPrim(map)
+	elif type == MAZE_GENERATOR_TYPE.RECURSIVE_DIVISION:
+		doRecursiveDivision(map)
 	
 def run():
-	WIDTH = 31
-	HEIGHT = 31
+	WIDTH = 21
+	HEIGHT = 21
 	
 	map = Map(WIDTH, HEIGHT)
-	generateMap(map)
+	generateMap(map, MAZE_GENERATOR_TYPE.RECURSIVE_DIVISION)
 	#source = map.generatePos((1,1),(1,HEIGHT-1))
 	#dest = map.generatePos((WIDTH-2,WIDTH-2),(1,HEIGHT-1))
 	#print("source:", source)
@@ -152,8 +190,3 @@ def run():
 
 if __name__ == "__main__":
 	run()	
-	
-	
-	
-	
-	
