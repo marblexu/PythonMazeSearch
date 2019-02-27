@@ -16,14 +16,14 @@ SCREEN_HEIGHT = (REC_HEIGHT + BUTTON_HEIGHT) * REC_SIZE
 class Button():
 	def __init__(self, screen, type, x, y):
 		self.screen = screen
-		self.width = REC_SIZE * 8
+		self.width = REC_SIZE * 7
 		self.height = REC_SIZE * 2
 		self.button_color = (128,128,128)
 		self.text_color = [(0,255,0), (255,0,0)]
 		self.font = pygame.font.SysFont(None, REC_SIZE*3//2)
 		
 		self.rect = pygame.Rect(0, 0, self.width, self.height)
-		self.rect.topleft = (x+REC_SIZE, y)
+		self.rect.topleft = (x, y)
 		self.type = type
 		self.init_msg()
 		
@@ -53,8 +53,9 @@ class Game():
 		self.maze_type = MAZE_GENERATOR_TYPE.RANDOM_PRIM
 		self.buttons = []
 		self.buttons.append(Button(self.screen, MAZE_GENERATOR_TYPE.RECURSIVE_BACKTRACKER, 0, 0))
-		self.buttons.append(Button(self.screen, MAZE_GENERATOR_TYPE.RANDOM_PRIM, REC_SIZE * 10, 0))
-		self.buttons.append(Button(self.screen, MAZE_GENERATOR_TYPE.RECURSIVE_DIVISION, REC_SIZE * 20, 0))
+		self.buttons.append(Button(self.screen, MAZE_GENERATOR_TYPE.RANDOM_PRIM, REC_SIZE * 8, 0))
+		self.buttons.append(Button(self.screen, MAZE_GENERATOR_TYPE.RECURSIVE_DIVISION, REC_SIZE * 16, 0))
+		self.buttons.append(Button(self.screen, MAZE_GENERATOR_TYPE.UNION_FIND_SET, REC_SIZE * 24, 0))
 		self.buttons[0].click(self)
 
 	def play(self):
