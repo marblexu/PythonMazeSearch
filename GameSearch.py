@@ -39,7 +39,6 @@ class Button():
 	def click(self, game):
 		game.maze_type = self.type
 		self.msg_image = self.font.render(generator_types[self.type], True, self.text_color[1], self.button_color)
-		print("select ",generator_types[self.type])
 	
 	def unclick(self):
 		self.msg_image = self.font.render(generator_types[self.type], True, self.text_color[0], self.button_color)

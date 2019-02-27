@@ -35,10 +35,7 @@ def recursiveDivision(map, x, y, width, height, wall_value):
 			else:
 				map.setMap(margin_entrys[i][0], margin_entrys[i][1], wall_value)
 	
-	def getMeaningHole(start, end):
-		len = end - start + 1
-		return randint(start + len//4, end - len//4)
-		
+	
 	if width <= 2 or height <= 2:
 		return
 	
@@ -55,11 +52,11 @@ def recursiveDivision(map, x, y, width, height, wall_value):
 	
 	#generate four holes, and create three holes
 	holes = []
-	print("(%d,%d) - (%d,%d), wall(%d,%d)" % (x, y, x + width -1, y + height - 1, wall_x, wall_y))
-	holes.append((getMeaningHole(x, wall_x -1), wall_y))
-	holes.append((getMeaningHole(wall_x + 1, x + width -1), wall_y))
-	holes.append((wall_x, getMeaningHole(y, wall_y -1)))
-	holes.append((wall_x, getMeaningHole(wall_y + 1, y + height - 1)))
+	#print("(%d,%d) - (%d,%d), wall(%d,%d)" % (x, y, x + width -1, y + height - 1, wall_x, wall_y))
+	holes.append((randint(x, wall_x -1), wall_y))
+	holes.append((randint(wall_x + 1, x + width -1), wall_y))
+	holes.append((wall_x, randint(y, wall_y -1)))
+	holes.append((wall_x, randint(wall_y + 1, y + height - 1)))
 	ignore_hole = randint(0, 3)
 	for i in range(0,4):
 		if i != ignore_hole:
