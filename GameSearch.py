@@ -6,21 +6,22 @@ from GameMap import *
 from MazeGenerator import *
 from AStarSearch import *
 
-REC_SIZE = 20
-REC_WIDTH = 31 # must be odd number
-REC_HEIGHT = 31 # must be odd number
-BUTTON_HEIGHT = 2
+REC_SIZE = 10
+REC_WIDTH = 51 # must be odd number
+REC_HEIGHT = 51 # must be odd number
+BUTTON_HEIGHT = 30
+BUTTON_WIDTH = 120
 SCREEN_WIDTH = REC_WIDTH * REC_SIZE
-SCREEN_HEIGHT = (REC_HEIGHT + BUTTON_HEIGHT) * REC_SIZE
+SCREEN_HEIGHT = REC_HEIGHT * REC_SIZE + BUTTON_HEIGHT
 
 class Button():
 	def __init__(self, screen, type, x, y):
 		self.screen = screen
-		self.width = REC_SIZE * 7
-		self.height = REC_SIZE * 2
+		self.width = BUTTON_WIDTH
+		self.height = BUTTON_HEIGHT
 		self.button_color = (128,128,128)
 		self.text_color = [(0,255,0), (255,0,0)]
-		self.font = pygame.font.SysFont(None, REC_SIZE*3//2)
+		self.font = pygame.font.SysFont(None, BUTTON_HEIGHT*2//3)
 		
 		self.rect = pygame.Rect(0, 0, self.width, self.height)
 		self.rect.topleft = (x, y)
@@ -53,15 +54,15 @@ class Game():
 		self.maze_type = MAZE_GENERATOR_TYPE.RANDOM_PRIM
 		self.buttons = []
 		self.buttons.append(Button(self.screen, MAZE_GENERATOR_TYPE.RECURSIVE_BACKTRACKER, 0, 0))
-		self.buttons.append(Button(self.screen, MAZE_GENERATOR_TYPE.RANDOM_PRIM, REC_SIZE * 8, 0))
-		self.buttons.append(Button(self.screen, MAZE_GENERATOR_TYPE.RECURSIVE_DIVISION, REC_SIZE * 16, 0))
-		self.buttons.append(Button(self.screen, MAZE_GENERATOR_TYPE.UNION_FIND_SET, REC_SIZE * 24, 0))
+		self.buttons.append(Button(self.screen, MAZE_GENERATOR_TYPE.RANDOM_PRIM, BUTTON_WIDTH + 10, 0))
+		self.buttons.append(Button(self.screen, MAZE_GENERATOR_TYPE.RECURSIVE_DIVISION, (BUTTON_WIDTH + 10) * 2, 0))
+		self.buttons.append(Button(self.screen, MAZE_GENERATOR_TYPE.UNION_FIND_SET, (BUTTON_WIDTH + 10) * 3, 0))
 		self.buttons[0].click(self)
 
 	def play(self):
 		self.clock.tick(30)
 		
-		pygame.draw.rect(self.screen, (255, 255, 255), pygame.Rect(0, 0, SCREEN_WIDTH, BUTTON_HEIGHT*REC_SIZE))
+		pygame.draw.rect(self.screen, (255, 255, 255), pygame.Rect(0, 0, SCREEN_WIDTH, BUTTON_HEIGHT))
 		for button in self.buttons:
 			button.draw()
 
@@ -76,7 +77,7 @@ class Game():
 					color = (255, 0, 0)
 				else:
 					color = (0, 255, 0)
-				pygame.draw.rect(self.screen, color, pygame.Rect(REC_SIZE*x, REC_SIZE*(y+BUTTON_HEIGHT), REC_SIZE, REC_SIZE))
+				pygame.draw.rect(self.screen, color, pygame.Rect(REC_SIZE*x, REC_SIZE*y+BUTTON_HEIGHT, REC_SIZE, REC_SIZE))
 		
 	def generateMaze(self):
 		if self.mode >= 4:
