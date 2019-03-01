@@ -22,3 +22,6 @@ $ python GameSearch.py
 # How to Play
 * mouse click button to choose one of the four maze generation algorithms
 * clcik any keyboard to do actions sequencely: generate a maze, generate start and destination point, find a path and clear the map
+
+# Demo
+![screenshot](https://raw.githubusercontent.com/marblexu/PythonMazeSearch/master/demo.png)
