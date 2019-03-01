@@ -173,7 +173,7 @@ def unionFindSet(map, width, height):
 		return parent[index]
 	
 	def getNodeIndex(x, y):
-		return x * width + y
+		return x * height + y
 	
 	# union two unconnected trees
 	def unionSet(parent, index1, index2, weightlist):
@@ -194,12 +194,12 @@ def unionFindSet(map, width, height):
 	# For Debug: print the generate tree
 	def printTree(parent):
 		def printPath(parent, x, y):
-			node = x * width + y
+			node = x * height + y
 			path = ''
 			while node != parent[node]:
-				path = '(' + str(node//width) +','+ str(node%width)+') <= ' + path
+				path = '(' + str(node//height) +','+ str(node%height)+') <= ' + path
 				node = parent[node]
-			path = '(' + str(node//width) +','+ str(node%width)+') <= ' + path 
+			path = '(' + str(node//height) +','+ str(node%height)+') <= ' + path 
 			print(path)
 		
 		for x in range(width):
@@ -254,7 +254,7 @@ def unionFindSet(map, width, height):
 			# the four adjacent entries are all connected, so can remove this entry
 			return False
 			
-	parentlist = [x*width+y for x in range(width) for y in range(height)]
+	parentlist = [x*height+y for x in range(width) for y in range(height)]
 	weightlist = [0 for x in range(width) for y in range(height)] 
 	checklist = []
 	for x in range(width):
@@ -286,7 +286,7 @@ def generateMap(map, type):
 		doUnionFindSet(map)
 	
 def run():
-	WIDTH = 21
+	WIDTH = 31
 	HEIGHT = 21
 	
 	map = Map(WIDTH, HEIGHT)
