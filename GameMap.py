@@ -14,19 +14,12 @@ class WALL_DIRECTION(Enum):
 	WALL_DOWN = 3,
 	
 map_entry_types = {0:MAP_ENTRY_TYPE.MAP_EMPTY, 1:MAP_ENTRY_TYPE.MAP_BLOCK, 2:MAP_ENTRY_TYPE.MAP_TARGET, 3:MAP_ENTRY_TYPE.MAP_PATH}
-map_wall_direction = {0:WALL_DIRECTION.WALL_LEFT, 1:WALL_DIRECTION.WALL_UP, 2:WALL_DIRECTION.WALL_RIGHT, 3:WALL_DIRECTION.WALL_DOWN}
 
 class Map():
 	def __init__(self, width, height):
 		self.width = width
 		self.height = height
 		self.map = [[0 for x in range(self.width)] for y in range(self.height)]
-		self.walls = [[(1, 1, 1, 1) for x in range(self.width)] for y in range(self.height)]
-	
-	def createBlock(self, block_num):
-		for i in range(block_num):
-			x, y = (randint(0, self.width-1), randint(0, self.height-1))
-			self.map[y][x] = 1
 	
 	def generatePos(self, rangeX, rangeY):
 		x, y = (randint(rangeX[0], rangeX[1]), randint(rangeY[0], rangeY[1]))
@@ -64,10 +57,8 @@ class Map():
 		return map_entry_types[self.map[y][x]]
 
 	def showMap(self):
-		print("+" * (2*self.width + 2))
-
 		for row in self.map:
-			s = '+'
+			s = ''
 			for entry in row:
 				if entry == 0:
 					s += ' 0'
@@ -75,8 +66,5 @@ class Map():
 					s += ' #'
 				else:
 					s += ' X'
-			s += '+'
 			print(s)
-
-		print("+" * (2*self.width + 2))
 		
