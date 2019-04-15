@@ -26,43 +26,41 @@ def recursiveDivision(map, x, y, width, height, wall_value):
 		return wall_index
 	
 	# must check adjacent entry of four margin entries, 
-	# if adjacent entry is movable, do nothing, otherwise set margin entry to wall
-	def processMarginEntry(map, x, y, width, height, wall_x, wall_y, wall_value):
+	# if adjacent entry is movable, must set the margin entry as the hole
+	def generateHoles(map, x, y, width, height, wall_x, wall_y):
+		holes = []
+
+		hole_entrys = [(randint(x, wall_x -1), wall_y), (randint(wall_x + 1, x + width -1), wall_y),
+						(wall_x, randint(y, wall_y -1)), (wall_x, randint(wall_y + 1, y + height - 1))]
 		margin_entrys = [(x, wall_y), (x+width-1, wall_y), (wall_x, y), (wall_x, y + height-1)]
 		adjacent_entrys = [(x-1, wall_y), (x+width, wall_y), (wall_x, y - 1), (wall_x, y + height)]
 		for i in range(4):
-			x, y = (adjacent_entrys[i][0], adjacent_entrys[i][1])
-			if map.isValid(x, y) and map.isMovable(x, y):
-				pass
+			adj_x, adj_y = (adjacent_entrys[i][0], adjacent_entrys[i][1])
+			if map.isValid(adj_x, adj_y) and map.isMovable(adj_x, adj_y):
+				map.setMap(margin_entrys[i][0], margin_entrys[i][1], MAP_ENTRY_TYPE.MAP_EMPTY)
 			else:
-				map.setMap(margin_entrys[i][0], margin_entrys[i][1], wall_value)
+				holes.append(hole_entrys[i])
+		#print("(%d,%d, %d,%d), wall(%d,%d) hole(%d)" % (x, y, width, height, wall_x, wall_y, len(holes)))
+		ignore_hole = randint(0, len(holes)-1)
+		for i in range(0, len(holes)):
+			if i != ignore_hole:
+				map.setMap(holes[i][0], holes[i][1], MAP_ENTRY_TYPE.MAP_EMPTY)
 	
 	
-	if width <= 2 or height <= 2:
+	if width <= 1 or height <= 1:
 		return
 	
 	#generate a row and a column wall index, they must be even number
 	wall_x, wall_y = (getWallIndex(x, width), getWallIndex(y, height))
 	
-	# must check adjacent entry of four margin entries is movable
-	processMarginEntry(map, x, y, width, height, wall_x, wall_y, wall_value)
-	
-	for i in range(x+1, x+width-1):
+	#set horizontal and vertical lines to wall
+	for i in range(x, x+width):
 		map.setMap(i, wall_y, wall_value)
-	for i in range(y+1, y+height-1):
+	for i in range(y, y+height):
 		map.setMap(wall_x, i, wall_value)
 	
-	#generate four holes, and create three holes
-	holes = []
-	#print("(%d,%d) - (%d,%d), wall(%d,%d)" % (x, y, x + width -1, y + height - 1, wall_x, wall_y))
-	holes.append((randint(x, wall_x -1), wall_y))
-	holes.append((randint(wall_x + 1, x + width -1), wall_y))
-	holes.append((wall_x, randint(y, wall_y -1)))
-	holes.append((wall_x, randint(wall_y + 1, y + height - 1)))
-	ignore_hole = randint(0, 3)
-	for i in range(0,4):
-		if i != ignore_hole:
-			map.setMap(holes[i][0], holes[i][1], MAP_ENTRY_TYPE.MAP_EMPTY)
+	#create three holes
+	generateHoles(map, x, y, width, height, wall_x, wall_y)
 	
 	recursiveDivision(map, x, y, wall_x - x, wall_y - y, wall_value)
 	recursiveDivision(map, x, wall_y + 1, wall_x - x, y + height - wall_y -1, wall_value)
