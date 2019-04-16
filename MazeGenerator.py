@@ -184,22 +184,23 @@ def unionFindSet(map, width, height):
 			# make the whole tree balance to achieve everage search time O(logN)
 			if weightlist[root1] > weightlist[root2]:
 				parent[root2] = root1
-				weightlist[root1] += 1
+				weightlist[root1] += weightlist[root2]
 			else:
 				parent[root1] = root2
-				weightlist[root2] += 1
+				weightlist[root2] += weightlist[root2]
 	
 	# For Debug: print the generate tree
+	def printPath(parent, x, y):
+		node = x * height + y
+		path = '(' + str(node//height) +','+ str(node%height)+')'
+		node = parent[node]
+		while node != parent[node]:
+			path = '(' + str(node//height) +','+ str(node%height)+') <= ' + path
+			node = parent[node]
+		path = '(' + str(node//height) +','+ str(node%height)+') <= ' + path
+		print(path)
+
 	def printTree(parent):
-		def printPath(parent, x, y):
-			node = x * height + y
-			path = ''
-			while node != parent[node]:
-				path = '(' + str(node//height) +','+ str(node%height)+') <= ' + path
-				node = parent[node]
-			path = '(' + str(node//height) +','+ str(node%height)+') <= ' + path 
-			print(path)
-		
 		for x in range(width):
 			for y in range(height):
 				printPath(parentlist, x, y)
@@ -253,7 +254,7 @@ def unionFindSet(map, width, height):
 			return False
 			
 	parentlist = [x*height+y for x in range(width) for y in range(height)]
-	weightlist = [0 for x in range(width) for y in range(height)] 
+	weightlist = [1 for x in range(width) for y in range(height)] 
 	checklist = []
 	for x in range(width):
 		for y in range(height):
@@ -266,6 +267,7 @@ def unionFindSet(map, width, height):
 		entry = choice(checklist)
 		if not checkAdjacentPos(map, entry[0], entry[1], width, height, parentlist, weightlist):
 			checklist.remove(entry)
+
 	#printTree(parentlist)
 			
 def doUnionFindSet(map):
